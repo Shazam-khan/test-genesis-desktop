@@ -1,0 +1,70 @@
+/* Theme CSS variables */
+:root {
+  --bg-body: #f0f2f5;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --border-color: #f0f0f0;
+  --scrollbar-thumb: #d9d9d9;
+  --scrollbar-hover: #bfbfbf;
+  --text-primary: rgba(0, 0, 0, 0.88);
+  --text-secondary: rgba(0, 0, 0, 0.45);
+  --log-bg: #fafafa;
+  --log-error-color: #f5222d;
+}
+
+[data-theme='dark'] {
+  --bg-body: #141414;
+  --bg-surface: #1f1f1f;
+  --bg-elevated: #262626;
+  --border-color: #303030;
+  --scrollbar-thumb: #4a4a4a;
+  --scrollbar-hover: #5a5a5a;
+  --text-primary: rgba(255, 255, 255, 0.88);
+  --text-secondary: rgba(255, 255, 255, 0.45);
+  --log-bg: #1a1a1a;
+  --log-error-color: #ff4d4f;
+}
+
+/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-body);
+  color: var(--text-primary);
+}
+
+#root {
+  height: 100vh;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+/* Log viewer styling */
+.log-content {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--log-bg);
+  padding: 12px;
+  border-radius: 4px;
+}

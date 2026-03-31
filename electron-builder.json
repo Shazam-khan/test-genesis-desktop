@@ -1,0 +1,19 @@
+{
+  "appId": "com.testgenesis.desktop",
+  "productName": "Test Genesis",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*"
+  ],
+  "win": {
+    "target": "nsis",
+    "icon": "public/favicon.svg"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  }
+}
