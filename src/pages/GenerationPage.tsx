@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Steps, Typography, Alert, Button, Space } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ArrowRightOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useAppStore } from '../store/appStore';
 import { useProcessUserStory, useGenerateTestCode } from '../hooks/useTestGeneration';
 import { useExecuteTests, useExecuteWithCoverage } from '../hooks/useExecutions';
@@ -17,7 +17,7 @@ import FeedbackPanel from '../components/feedback/FeedbackPanel';
 import CoverageOverview from '../components/coverage/CoverageOverview';
 import CoverageChart from '../components/coverage/CoverageChart';
 import type { TestCard, TestCardValidation } from '../types/testCard';
-import type { GenerateTestCodeOptions, ExecuteTestsResponse, CoverageData } from '../types/execution';
+import type { GenerateTestCodeOptions, ExecuteTestsResponse, CoverageData, BusinessRuleValidation } from '../types/execution';
 
 const STEPS = [
   { title: 'User Story' },
@@ -39,7 +39,7 @@ export default function GenerationPage() {
   const [testCode, setTestCode] = useState('');
   const [chunksUsed, setChunksUsed] = useState(0);
   const [scenariosCount, setScenariosCount] = useState(0);
-  const [businessRuleValidation, setBusinessRuleValidation] = useState<Record<string, unknown> | null>(null);
+  const [businessRuleValidation, setBusinessRuleValidation] = useState<BusinessRuleValidation | null>(null);
   const [genOptions, setGenOptions] = useState<GenerateTestCodeOptions>({
     approach: 'multi-query',
     enable_phase2: false,
@@ -170,6 +170,11 @@ export default function GenerationPage() {
           description={processStoryMutation.error?.message}
           showIcon
           style={{ marginTop: 16 }}
+          action={
+            <Button size="small" icon={<ReloadOutlined />} onClick={() => processStoryMutation.reset()}>
+              Dismiss
+            </Button>
+          }
         />
       )}
 
@@ -207,6 +212,11 @@ export default function GenerationPage() {
               description={generateCodeMutation.error?.message}
               showIcon
               style={{ marginBottom: 16 }}
+              action={
+                <Button size="small" icon={<ReloadOutlined />} onClick={handleGenerateCode}>
+                  Retry
+                </Button>
+              }
             />
           )}
 
@@ -252,6 +262,11 @@ export default function GenerationPage() {
               description={executeTestsMutation.error?.message}
               showIcon
               style={{ marginBottom: 16 }}
+              action={
+                <Button size="small" icon={<ReloadOutlined />} onClick={handleExecuteTests}>
+                  Retry
+                </Button>
+              }
             />
           )}
 

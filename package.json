@@ -3,8 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "description": "Test Genesis - AI-Powered Test Generation Desktop App",
-  "main": "dist-electron/main.js",
   "type": "module",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

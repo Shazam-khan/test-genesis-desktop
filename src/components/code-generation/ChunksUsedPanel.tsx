@@ -1,30 +1,51 @@
-import { Card, Statistic, Typography } from 'antd';
-import { DatabaseOutlined } from '@ant-design/icons';
+import { Card, Statistic, Tag, Row, Col } from 'antd';
+import { DatabaseOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import type { BusinessRuleValidation } from '../../types/execution';
 
 interface Props {
   chunksUsed: number;
   scenariosCount?: number;
-  businessRuleValidation?: Record<string, unknown> | null;
+  businessRuleValidation?: BusinessRuleValidation | null;
 }
 
 export default function ChunksUsedPanel({ chunksUsed, scenariosCount, businessRuleValidation }: Props) {
+  const rulesChecked = businessRuleValidation?.rules_checked ?? 0;
+  const rulesPassed = businessRuleValidation?.rules_passed ?? 0;
+
   return (
     <Card size="small" title="RAG Context" style={{ marginTop: 16 }}>
-      <Statistic
-        title="Code Chunks Retrieved"
-        value={chunksUsed}
-        prefix={<DatabaseOutlined />}
-      />
-      {scenariosCount != null && scenariosCount > 0 && (
-        <Statistic
-          title="Scenarios Generated"
-          value={scenariosCount}
-          style={{ marginTop: 16 }}
-        />
-      )}
-      {businessRuleValidation && (
-        <div style={{ marginTop: 16 }}>
-          <Typography.Text type="secondary">Business Rule Validation: Available</Typography.Text>
+      <Row gutter={24}>
+        <Col>
+          <Statistic
+            title="Code Chunks Retrieved"
+            value={chunksUsed}
+            prefix={<DatabaseOutlined />}
+          />
+        </Col>
+        {scenariosCount != null && scenariosCount > 0 && (
+          <Col>
+            <Statistic title="Scenarios Generated" value={scenariosCount} />
+          </Col>
+        )}
+        {businessRuleValidation && rulesChecked > 0 && (
+          <Col>
+            <Statistic
+              title="Business Rules"
+              value={`${rulesPassed}/${rulesChecked}`}
+              prefix={
+                rulesPassed === rulesChecked ? (
+                  <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                ) : (
+                  <CloseCircleOutlined style={{ color: '#faad14' }} />
+                )
+              }
+            />
+          </Col>
+        )}
+      </Row>
+      {businessRuleValidation && rulesChecked === 0 && (
+        <div style={{ marginTop: 12 }}>
+          <Tag color="blue">Business Rule Validation Available</Tag>
         </div>
       )}
     </Card>

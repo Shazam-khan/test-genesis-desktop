@@ -33,17 +33,19 @@ function createWindow() {
   });
 }
 
-// IPC: Open directory picker dialog
-ipcMain.handle('select-directory', async () => {
-  if (!mainWindow) return undefined;
-  const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory'],
-    title: 'Select Project Directory',
+app.whenReady().then(() => {
+  // IPC: Open directory picker dialog
+  ipcMain.handle('select-directory', async () => {
+    if (!mainWindow) return undefined;
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+      title: 'Select Project Directory',
+    });
+    return result.canceled ? undefined : result.filePaths[0];
   });
-  return result.canceled ? undefined : result.filePaths[0];
-});
 
-app.whenReady().then(createWindow);
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

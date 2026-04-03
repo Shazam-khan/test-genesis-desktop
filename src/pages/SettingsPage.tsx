@@ -1,4 +1,4 @@
-import { Typography, Card, Form, Input, InputNumber, Select, Button, Space, Divider, message } from 'antd';
+import { Typography, Card, Form, Input, InputNumber, Select, Button, Space, Divider, Popconfirm, message } from 'antd';
 import { useAppStore } from '../store/appStore';
 import type { AppSettings } from '../store/appStore';
 import ThemeToggle from '../components/common/ThemeToggle';
@@ -78,7 +78,15 @@ export default function SettingsPage() {
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">Save Settings</Button>
-              <Button onClick={handleReset}>Reset to Defaults</Button>
+              <Popconfirm
+                title="Reset all settings?"
+                description="This will restore all settings to their default values."
+                onConfirm={handleReset}
+                okText="Reset"
+                cancelText="Cancel"
+              >
+                <Button>Reset to Defaults</Button>
+              </Popconfirm>
             </Space>
           </Form.Item>
         </Form>

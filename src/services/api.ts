@@ -22,7 +22,9 @@ api.interceptors.response.use(
   (error) => {
     const message =
       error.response?.data?.error || error.message || 'An unexpected error occurred';
-    console.error('[API Error]', message);
+    if (import.meta.env.DEV) {
+      console.error('[API Error]', message);
+    }
     return Promise.reject(error);
   }
 );
@@ -35,7 +37,7 @@ export async function checkBackendHealth(): Promise<boolean> {
     const { settings } = useAppStore.getState();
     const rootURL = settings.apiBaseUrl.replace(/\/api\/?$/, '');
     const res = await axios.get(`${rootURL}/health`, { timeout: 5000 });
-    return res.data?.success === true;
+    return res.data?.status === 'healthy';
   } catch {
     return false;
   }

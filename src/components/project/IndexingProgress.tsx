@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Button, Steps, Typography, Alert, Spin, Statistic, Row, Col, Card } from 'antd';
+import { useState, useEffect, useRef } from 'react';
+import { Button, Steps, Typography, Alert, Progress, Statistic, Row, Col, Card } from 'antd';
 import { RocketOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useIndexProject } from '../../hooks/useProjects';
 import { useAppStore } from '../../store/appStore';
@@ -11,8 +11,9 @@ interface Props {
 }
 
 export default function IndexingProgress({ projectPath }: Props) {
-  const [currentStep, setCurrentStep] = useState(0);
   const [result, setResult] = useState<IndexResult | null>(null);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const indexMutation = useIndexProject();
   const setProject = useAppStore((s) => s.setProject);
 
@@ -24,23 +25,37 @@ export default function IndexingProgress({ projectPath }: Props) {
     { title: 'Complete' },
   ];
 
+  // Derive current step from elapsed time (slows down as it progresses)
+  const getStepFromElapsed = (ms: number): number => {
+    if (ms < 1500) return 0;
+    if (ms < 4000) return 1;
+    if (ms < 8000) return 2;
+    return 3; // Stays on "Storing Embeddings" until API completes
+  };
+
+  const currentStep = result ? 4 : getStepFromElapsed(elapsedMs);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
   const handleIndex = async () => {
     setResult(null);
-    setCurrentStep(0);
+    setElapsedMs(0);
 
-    // Simulate step progression while waiting for the single API call
-    const stepInterval = setInterval(() => {
-      setCurrentStep((prev) => Math.min(prev + 1, 3));
-    }, 2000);
+    timerRef.current = setInterval(() => {
+      setElapsedMs((prev) => prev + 500);
+    }, 500);
 
     try {
       const res = await indexMutation.mutateAsync(projectPath);
-      clearInterval(stepInterval);
-      setCurrentStep(4);
+      if (timerRef.current) clearInterval(timerRef.current);
       setResult(res);
       setProject(projectPath, res.project_id);
     } catch {
-      clearInterval(stepInterval);
+      if (timerRef.current) clearInterval(timerRef.current);
     }
   };
 
@@ -51,7 +66,7 @@ export default function IndexingProgress({ projectPath }: Props) {
       </Typography.Title>
 
       <Steps
-        current={indexMutation.isPending ? currentStep : result ? 4 : -1}
+        current={indexMutation.isPending || result ? currentStep : -1}
         items={steps}
         size="small"
         style={{ marginBottom: 24 }}
@@ -65,9 +80,9 @@ export default function IndexingProgress({ projectPath }: Props) {
 
       {indexMutation.isPending && (
         <div style={{ textAlign: 'center', padding: 24 }}>
-          <Spin size="large" />
+          <Progress type="circle" percent={Math.min(95, Math.round((currentStep / 4) * 100))} />
           <Typography.Paragraph type="secondary" style={{ marginTop: 16 }}>
-            Indexing project... This may take a moment.
+            {steps[currentStep]?.title}... This may take a moment.
           </Typography.Paragraph>
         </div>
       )}

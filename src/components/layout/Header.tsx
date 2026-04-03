@@ -16,7 +16,7 @@ export default function Header() {
   useEffect(() => {
     const check = () => checkBackendHealth().then(setBackendOnline);
     check();
-    const interval = setInterval(check, 15000);
+    const interval = setInterval(check, 30000);
     return () => clearInterval(interval);
   }, []);
 
