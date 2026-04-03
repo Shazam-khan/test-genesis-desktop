@@ -9,14 +9,14 @@ export default defineConfig({
     electron([
       {
         entry: 'electron/main.ts',
+        onstart(args) {
+          // VS Code sets ELECTRON_RUN_AS_NODE=1 which breaks Electron startup
+          delete process.env.ELECTRON_RUN_AS_NODE;
+          args.startup();
+        },
         vite: {
           build: {
             outDir: 'dist-electron',
-            rollupOptions: {
-              output: {
-                format: 'cjs',
-              },
-            },
           },
         },
       },

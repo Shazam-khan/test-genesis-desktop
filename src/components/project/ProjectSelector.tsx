@@ -1,4 +1,4 @@
-import { Button, Card, List, Typography, Tag, Space, Empty, message } from 'antd';
+import { Button, Card, List, Typography, Tag, Space, Empty, Skeleton } from 'antd';
 import { FolderOpenOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useProjects } from '../../hooks/useProjects';
 import { useAppStore } from '../../store/appStore';
@@ -35,10 +35,21 @@ export default function ProjectSelector({ onSelectNew }: Props) {
         </Button>
       </Space>
 
-      {data?.projects && data.projects.length > 0 ? (
+      {isLoading ? (
         <List
           grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 3 }}
-          loading={isLoading}
+          dataSource={[1, 2, 3]}
+          renderItem={() => (
+            <List.Item>
+              <Card size="small">
+                <Skeleton active paragraph={{ rows: 2 }} />
+              </Card>
+            </List.Item>
+          )}
+        />
+      ) : data?.projects && data.projects.length > 0 ? (
+        <List
+          grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 3 }}
           dataSource={data.projects}
           renderItem={(project) => (
             <List.Item>

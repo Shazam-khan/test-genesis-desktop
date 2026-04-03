@@ -1,8 +1,9 @@
-import { Typography, Table, Alert, Tag, Space, Progress } from 'antd';
+import { Typography, Table, Alert, Tag, Space, Progress, Button, Skeleton, Card, message } from 'antd';
+import { BarChartOutlined } from '@ant-design/icons';
 import FeedbackPanel from '../components/feedback/FeedbackPanel';
 import type { ColumnsType } from 'antd/es/table';
 import { useAppStore } from '../store/appStore';
-import { useExecutions } from '../hooks/useExecutions';
+import { useExecutions, useCollectCoverage } from '../hooks/useExecutions';
 import StatusBadge from '../components/common/StatusBadge';
 import { formatDuration, formatDate, formatPercentage } from '../utils/formatters';
 import type { TestExecution } from '../types/execution';
@@ -64,6 +65,35 @@ const columns: ColumnsType<TestExecution> = [
   },
 ];
 
+function ExpandedRow({ record }: { record: TestExecution }) {
+  const collectCoverageMutation = useCollectCoverage();
+
+  const handleCollectCoverage = () => {
+    collectCoverageMutation.mutate(record.id, {
+      onSuccess: (data) => {
+        message.success(`Coverage collected: ${data.coverage.code_coverage}%`);
+      },
+    });
+  };
+
+  return (
+    <div>
+      {record.code_coverage == null && record.status === 'PASSED' && (
+        <Button
+          icon={<BarChartOutlined />}
+          onClick={handleCollectCoverage}
+          loading={collectCoverageMutation.isPending}
+          style={{ marginBottom: 12 }}
+          size="small"
+        >
+          Collect Coverage
+        </Button>
+      )}
+      <FeedbackPanel executionId={record.id} />
+    </div>
+  );
+}
+
 export default function ExecutionsPage() {
   const selectedProjectPath = useAppStore((s) => s.selectedProjectPath);
   const { data, isLoading } = useExecutions(selectedProjectPath);
@@ -94,9 +124,7 @@ export default function ExecutionsPage() {
         size="middle"
         pagination={{ pageSize: 15 }}
         expandable={{
-          expandedRowRender: (record) => (
-            <FeedbackPanel executionId={record.id} />
-          ),
+          expandedRowRender: (record) => <ExpandedRow record={record} />,
         }}
       />
     </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Typography, Row, Col, Alert, Spin, Space, Empty, Button, Drawer } from 'antd';
-import { FileTextOutlined } from '@ant-design/icons';
+import { Typography, Row, Col, Alert, Spin, Space, Empty, Button, Drawer, Skeleton, Card, message } from 'antd';
+import { FileTextOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useAppStore } from '../store/appStore';
 import { useProjectKPIs, useTrends, useRecommendations, useQualityReport } from '../hooks/useAnalytics';
 import KPIDashboard from '../components/analytics/KPIDashboard';
@@ -21,6 +21,31 @@ export default function AnalyticsPage() {
   const [reportOpen, setReportOpen] = useState(false);
   const reportQuery = useQualityReport(selectedProjectPath, reportOpen);
 
+  const downloadJSON = (data: unknown, filename: string) => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    message.success(`Downloaded ${filename}`);
+  };
+
+  const handleExportKPIs = () => {
+    if (kpisQuery.data) {
+      const projectName = selectedProjectPath!.split(/[/\\]/).pop() || 'project';
+      downloadJSON(kpisQuery.data, `${projectName}-kpis.json`);
+    }
+  };
+
+  const handleDownloadReport = () => {
+    if (reportQuery.data) {
+      const projectName = selectedProjectPath!.split(/[/\\]/).pop() || 'project';
+      downloadJSON(reportQuery.data, `${projectName}-quality-report.json`);
+    }
+  };
+
   if (!selectedProjectPath) {
     return (
       <Alert
@@ -36,9 +61,42 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: 'center', padding: 64 }}>
-        <Spin size="large" tip="Loading analytics..." />
+      <div>
+        <Typography.Title level={3}>Analytics Dashboard</Typography.Title>
+        <Row gutter={[16, 16]}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Col xs={12} sm={8} md={6} key={i}>
+              <Card size="small">
+                <Skeleton active paragraph={{ rows: 1 }} title={{ width: '60%' }} />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          <Col xs={24} lg={12}>
+            <Card><Skeleton active paragraph={{ rows: 6 }} /></Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card><Skeleton active paragraph={{ rows: 6 }} /></Card>
+          </Col>
+        </Row>
       </div>
+    );
+  }
+
+  if (kpisQuery.isError || trendsQuery.isError) {
+    return (
+      <Alert
+        type="error"
+        message="Failed to load analytics"
+        description={kpisQuery.error?.message || trendsQuery.error?.message}
+        showIcon
+        action={
+          <Button size="small" onClick={() => { kpisQuery.refetch(); trendsQuery.refetch(); }}>
+            Retry
+          </Button>
+        }
+      />
     );
   }
 
@@ -58,6 +116,9 @@ export default function AnalyticsPage() {
         )}
         <Button icon={<FileTextOutlined />} onClick={() => setReportOpen(true)}>
           Generate Report
+        </Button>
+        <Button icon={<DownloadOutlined />} onClick={handleExportKPIs} disabled={!kpis}>
+          Export KPIs
         </Button>
       </Space>
 
@@ -109,6 +170,16 @@ export default function AnalyticsPage() {
         width={640}
         open={reportOpen}
         onClose={() => setReportOpen(false)}
+        extra={
+          <Button
+            icon={<DownloadOutlined />}
+            onClick={handleDownloadReport}
+            disabled={!reportQuery.data}
+            size="small"
+          >
+            Download
+          </Button>
+        }
       >
         {reportQuery.isLoading && (
           <div style={{ textAlign: 'center', padding: 48 }}>
