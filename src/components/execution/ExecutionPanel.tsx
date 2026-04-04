@@ -19,7 +19,6 @@ export default function ExecutionPanel({ onExecute, onExecuteWithCoverage, isExe
           loading={isExecuting}
           disabled={!hasCode}
           size="large"
-          danger
         >
           Run Tests
         </Button>

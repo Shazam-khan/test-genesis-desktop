@@ -42,7 +42,7 @@ export interface StoredEvaluation {
   execution_id: number;
   evaluation_type: string;
   trustworthiness_score: number | null;
-  explanation: string | null;
+  evaluation_details: Record<string, unknown>;
   created_at: string;
 }
 

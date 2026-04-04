@@ -31,7 +31,7 @@ export interface Project {
   indexed_files: number;
   indexed_chunks: number;
   indexed_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 /** Response from GET /api/projects */

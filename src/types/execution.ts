@@ -1,22 +1,20 @@
 /** A generated scenario from Phase 2 */
 export interface Scenario {
-  id: string;
-  name: string;
+  scenario_type: string;
   description: string;
-  module?: string;
-  steps?: string[];
+  steps: string[];
+  expected_outcomes: string[];
+  related_modules: string[];
 }
 
 /** Business rule validation result */
 export interface BusinessRuleValidation {
-  rules_checked: number;
-  rules_passed: number;
-  rules_failed: number;
-  details?: Array<{
-    rule_id: string;
-    passed: boolean;
-    message?: string;
-  }>;
+  rule_id: string;
+  is_tested: boolean;
+  coverage_score: number;
+  missing_assertions: string[];
+  suggestions: string[];
+  assertions_found?: string[];
 }
 
 /** Individual test result from parsing */
@@ -47,6 +45,7 @@ export interface ExecuteTestsResponse {
   summary: TestSummary;
   stdout?: string;
   stderr?: string;
+  performance?: Record<string, number>;
 }
 
 /** Coverage data from POST /api/collect-coverage/<id> */
@@ -95,7 +94,7 @@ export interface TestExecutionsResponse {
 
 /** Options for generating test code */
 export interface GenerateTestCodeOptions {
-  approach?: 'single-query' | 'multi-query';
+  approach?: 'single' | 'multi';
   enable_phase2?: boolean;
   auto_execute?: boolean;
 }

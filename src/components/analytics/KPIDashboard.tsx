@@ -15,75 +15,56 @@ interface Props {
   kpis: ProjectKPIs;
 }
 
-export default function KPIDashboard({ kpis }: Props) {
-  const items = [
-    {
-      title: 'Total Tests',
-      value: kpis.total_tests,
-      icon: <ExperimentOutlined />,
-    },
-    {
-      title: 'Pass Rate',
-      value: kpis.pass_rate,
-      suffix: '%',
-      color: kpis.pass_rate >= 80 ? '#52c41a' : kpis.pass_rate >= 50 ? '#faad14' : '#f5222d',
-      icon: <CheckCircleOutlined />,
-    },
-    {
-      title: 'Avg Coverage',
-      value: kpis.average_coverage,
-      suffix: '%',
-      precision: 1,
-      color: kpis.average_coverage >= 70 ? '#52c41a' : '#faad14',
-      icon: <DashboardOutlined />,
-    },
-    {
-      title: 'Avg Trustworthiness',
-      value: Math.round(kpis.average_trustworthiness * 100),
-      suffix: '%',
-      icon: <SafetyCertificateOutlined />,
-    },
-    {
-      title: 'Avg Execution Time',
-      value: kpis.average_execution_time_ms,
-      suffix: 'ms',
-      precision: 0,
-      icon: <ClockCircleOutlined />,
-    },
-    {
-      title: 'Failed Tests',
-      value: kpis.failed_tests,
-      color: kpis.failed_tests > 0 ? '#f5222d' : '#52c41a',
-      icon: <CloseCircleOutlined />,
-    },
-    {
-      title: 'Indexed Files',
-      value: kpis.indexed_files,
-      icon: <FileOutlined />,
-    },
-    {
-      title: 'Indexed Chunks',
-      value: kpis.indexed_chunks,
-      icon: <DatabaseOutlined />,
-    },
-  ];
+const KPI_CONFIG = [
+  { key: 'total_tests', title: 'Total Tests', icon: <ExperimentOutlined />, gradient: 'kpi-card-brand', iconBg: 'rgba(99,102,241,0.1)', iconColor: '#6366f1' },
+  { key: 'pass_rate', title: 'Pass Rate', suffix: '%', icon: <CheckCircleOutlined />, gradient: 'kpi-card-success', iconBg: 'rgba(16,185,129,0.1)', iconColor: '#10b981' },
+  { key: 'average_coverage', title: 'Avg Coverage', suffix: '%', precision: 1, icon: <DashboardOutlined />, gradient: 'kpi-card-cyan', iconBg: 'rgba(6,182,212,0.1)', iconColor: '#06b6d4' },
+  { key: 'average_trustworthiness', title: 'Avg Trust', icon: <SafetyCertificateOutlined />, gradient: 'kpi-card-violet', iconBg: 'rgba(139,92,246,0.1)', iconColor: '#8b5cf6', transform: (v: number) => Math.round(v * 100), suffix: '%' },
+  { key: 'average_execution_time_ms', title: 'Avg Time', suffix: 'ms', precision: 0, icon: <ClockCircleOutlined />, gradient: 'kpi-card-warning', iconBg: 'rgba(245,158,11,0.1)', iconColor: '#f59e0b' },
+  { key: 'failed_tests', title: 'Failed Tests', icon: <CloseCircleOutlined />, gradient: 'kpi-card-danger', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444' },
+  { key: 'indexed_files', title: 'Indexed Files', icon: <FileOutlined />, gradient: 'kpi-card-pink', iconBg: 'rgba(236,72,153,0.1)', iconColor: '#ec4899' },
+  { key: 'indexed_chunks', title: 'Indexed Chunks', icon: <DatabaseOutlined />, gradient: 'kpi-card-brand', iconBg: 'rgba(99,102,241,0.1)', iconColor: '#6366f1' },
+];
 
+export default function KPIDashboard({ kpis }: Props) {
   return (
     <Row gutter={[16, 16]}>
-      {items.map((item) => (
-        <Col xs={12} sm={8} md={6} key={item.title}>
-          <Card size="small">
-            <Statistic
-              title={item.title}
-              value={item.value}
-              suffix={item.suffix}
-              precision={item.precision}
-              valueStyle={item.color ? { color: item.color } : undefined}
-              prefix={item.icon}
-            />
-          </Card>
-        </Col>
-      ))}
+      {KPI_CONFIG.map((item) => {
+        const raw = kpis[item.key as keyof ProjectKPIs] as number;
+        const value = item.transform ? item.transform(raw) : raw;
+
+        return (
+          <Col xs={12} sm={8} md={6} key={item.key}>
+            <Card size="small" className={`card-hover-lift ${item.gradient}`}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: item.iconBg,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 18,
+                    color: item.iconColor,
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.icon}
+                </div>
+                <Statistic
+                  title={item.title}
+                  value={value}
+                  suffix={item.suffix}
+                  precision={item.precision}
+                  valueStyle={{ fontSize: 22, fontWeight: 700 }}
+                />
+              </div>
+            </Card>
+          </Col>
+        );
+      })}
     </Row>
   );
 }

@@ -116,7 +116,7 @@ export interface QualityReport {
     average_coverage: number;
     average_trustworthiness: number;
   };
-  kpis: ProjectKPIsResponse;
+  kpis: ProjectKPIs;
   trends: {
     test_generation: TrendData;
     domain_coverage: DomainCoverage;

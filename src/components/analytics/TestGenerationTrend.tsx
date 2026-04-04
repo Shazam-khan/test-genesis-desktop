@@ -13,28 +13,42 @@ export default function TestGenerationTrend({ data }: Props) {
     <Card size="small" title="Test Generation Trend">
       <ResponsiveContainer width="100%" height={280}>
         <AreaChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <defs>
+            <linearGradient id="gradPassed" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981" stopOpacity={0.5} />
+              <stop offset="100%" stopColor="#10b981" stopOpacity={0.05} />
+            </linearGradient>
+            <linearGradient id="gradFailed" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ef4444" stopOpacity={0.5} />
+              <stop offset="100%" stopColor="#ef4444" stopOpacity={0.05} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
           <XAxis dataKey="date" tick={{ fontSize: 11 }} />
           <YAxis />
-          <Tooltip />
+          <Tooltip
+            contentStyle={{ borderRadius: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: 'none' }}
+          />
           <Legend />
           <Area
             type="monotone"
             dataKey="passed"
             stackId="1"
-            stroke="#52c41a"
-            fill="#52c41a"
-            fillOpacity={0.6}
+            stroke="#10b981"
+            fill="url(#gradPassed)"
+            strokeWidth={2}
             name="Passed"
+            animationDuration={800}
           />
           <Area
             type="monotone"
             dataKey="failed"
             stackId="1"
-            stroke="#f5222d"
-            fill="#f5222d"
-            fillOpacity={0.6}
+            stroke="#ef4444"
+            fill="url(#gradFailed)"
+            strokeWidth={2}
             name="Failed"
+            animationDuration={800}
           />
         </AreaChart>
       </ResponsiveContainer>

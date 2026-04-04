@@ -47,7 +47,7 @@ export default function ResultsSummary({ results }: Props) {
             <Statistic
               title="Passed"
               value={results.tests_passed}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: '#10b981' }}
               prefix={<CheckCircleOutlined />}
             />
           </Col>
@@ -55,7 +55,7 @@ export default function ResultsSummary({ results }: Props) {
             <Statistic
               title="Failed"
               value={results.tests_failed}
-              valueStyle={{ color: '#f5222d' }}
+              valueStyle={{ color: '#ef4444' }}
               prefix={<CloseCircleOutlined />}
             />
           </Col>
