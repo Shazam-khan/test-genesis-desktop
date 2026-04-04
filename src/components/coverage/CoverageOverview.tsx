@@ -6,9 +6,9 @@ interface Props {
 }
 
 function getCoverageColor(pct: number): string {
-  if (pct >= 80) return '#52c41a';
-  if (pct >= 50) return '#faad14';
-  return '#f5222d';
+  if (pct >= 80) return '#10b981';
+  if (pct >= 50) return '#f59e0b';
+  return '#ef4444';
 }
 
 export default function CoverageOverview({ coverage }: Props) {
@@ -20,18 +20,19 @@ export default function CoverageOverview({ coverage }: Props) {
 
   return (
     <Card size="small" title="Coverage Report" style={{ marginTop: 16 }}>
-      <Row gutter={24} justify="center">
+      <Row gutter={32} justify="center">
         {metrics.map((m) => (
           <Col key={m.label} style={{ textAlign: 'center' }}>
             <Progress
               type="circle"
               percent={Math.round(m.value)}
               strokeColor={getCoverageColor(m.value)}
-              size={100}
+              size={120}
+              strokeWidth={8}
             />
             <Typography.Text
               type="secondary"
-              style={{ display: 'block', marginTop: 8, fontSize: 12 }}
+              style={{ display: 'block', marginTop: 10, fontSize: 13, fontWeight: 500 }}
             >
               {m.label}
             </Typography.Text>
@@ -42,6 +43,7 @@ export default function CoverageOverview({ coverage }: Props) {
             title="Lines Covered"
             value={coverage.lines_covered}
             suffix={`/ ${coverage.lines_total}`}
+            valueStyle={{ fontWeight: 700 }}
           />
         </Col>
       </Row>

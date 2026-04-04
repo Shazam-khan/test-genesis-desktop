@@ -8,32 +8,34 @@ interface Props {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 0.8) return '#52c41a';
-  if (score >= 0.5) return '#faad14';
-  return '#f5222d';
+  if (score >= 0.8) return '#10b981';
+  if (score >= 0.5) return '#f59e0b';
+  return '#ef4444';
 }
 
 export default function TrustworthinessGauge({ score, explanation, method }: Props) {
   const pct = score !== null ? Math.round(score * 100) : 0;
+  const color = score !== null ? getScoreColor(score) : '#94a3b8';
 
   return (
     <Space direction="vertical" align="center" style={{ width: '100%', padding: 16 }}>
       <Progress
         type="circle"
         percent={pct}
-        strokeColor={score !== null ? getScoreColor(score) : undefined}
+        strokeColor={color}
+        strokeWidth={10}
         format={() => (
-          <span style={{ fontSize: 20, fontWeight: 600 }}>
+          <span style={{ fontSize: 24, fontWeight: 700, color }}>
             {score !== null ? `${pct}%` : 'N/A'}
           </span>
         )}
-        size={120}
+        size={130}
       />
-      <Space>
-        <SafetyCertificateOutlined />
+      <Space style={{ marginTop: 8 }}>
+        <SafetyCertificateOutlined style={{ color }} />
         <Typography.Text strong>Trustworthiness Score</Typography.Text>
       </Space>
-      <Tag color={method === 'tlm' ? 'blue' : 'orange'}>
+      <Tag color={method === 'tlm' ? 'purple' : 'orange'} style={{ fontWeight: 500 }}>
         {method === 'tlm' ? 'CleanLab TLM' : 'Heuristic Fallback'}
       </Tag>
       {explanation && (

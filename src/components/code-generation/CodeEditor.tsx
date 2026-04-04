@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Space, Button, Typography, message } from 'antd';
+import { Space, Button, Typography, message } from 'antd';
 import { CopyOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import Editor from '@monaco-editor/react';
 import { useAppStore } from '../../store/appStore';
@@ -25,26 +25,32 @@ export default function CodeEditor({ code, language, onChange }: Props) {
   };
 
   return (
-    <Card
-      size="small"
-      title="Generated Test Code"
-      extra={
-        <Space>
+    <div className="editor-chrome">
+      {/* macOS-style chrome header */}
+      <div className="editor-chrome-header">
+        <span className="editor-dot red" />
+        <span className="editor-dot yellow" />
+        <span className="editor-dot green" />
+        <Typography.Text type="secondary" style={{ fontSize: 12, marginLeft: 8, flex: 1 }}>
+          Generated Test Code
+        </Typography.Text>
+        <Space size={4}>
           <Button
             size="small"
+            type="text"
             icon={editable ? <EyeOutlined /> : <EditOutlined />}
             onClick={() => setEditable(!editable)}
           >
             {editable ? 'Read Only' : 'Edit'}
           </Button>
-          <Button size="small" icon={<CopyOutlined />} onClick={handleCopy}>
+          <Button size="small" type="text" icon={<CopyOutlined />} onClick={handleCopy}>
             Copy
           </Button>
         </Space>
-      }
-    >
+      </div>
+
       <Editor
-        height="450px"
+        height="calc(100vh - 350px)"
         language={monacoLang}
         value={code}
         onChange={(val) => onChange?.(val || '')}
@@ -57,11 +63,15 @@ export default function CodeEditor({ code, language, onChange }: Props) {
           scrollBeyondLastLine: false,
           wordWrap: 'on',
           automaticLayout: true,
+          padding: { top: 12 },
         }}
       />
-      <Typography.Text type="secondary" style={{ marginTop: 8, display: 'block' }}>
-        {code.split('\n').length} lines
-      </Typography.Text>
-    </Card>
+
+      <div style={{ padding: '6px 16px', borderTop: '1px solid var(--border-color)', background: 'var(--bg-elevated)' }}>
+        <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+          {code.split('\n').length} lines &middot; {monacoLang}
+        </Typography.Text>
+      </div>
+    </div>
   );
 }

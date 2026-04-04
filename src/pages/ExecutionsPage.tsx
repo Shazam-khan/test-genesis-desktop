@@ -52,7 +52,7 @@ const columns: ColumnsType<TestExecution> = [
     render: (val: number | null) => {
       if (val == null) return '—';
       const pct = Math.round(val * 100);
-      const color = pct >= 80 ? '#52c41a' : pct >= 50 ? '#faad14' : '#f5222d';
+      const color = pct >= 80 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
       return <Progress type="circle" percent={pct} size={32} strokeColor={color} />;
     },
   },

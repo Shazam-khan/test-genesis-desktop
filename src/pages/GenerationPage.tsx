@@ -1,6 +1,16 @@
 import { useState } from 'react';
-import { Steps, Typography, Alert, Button, Space } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Steps, Typography, Alert, Button, Space, Row, Col, Tabs, Spin } from 'antd';
+import {
+  ArrowLeftOutlined,
+  ReloadOutlined,
+  PlayCircleOutlined,
+  BarChartOutlined,
+  CodeOutlined,
+  FileTextOutlined,
+  FundOutlined,
+  BugOutlined,
+  SafetyCertificateOutlined,
+} from '@ant-design/icons';
 import { useAppStore } from '../store/appStore';
 import { useProcessUserStory, useGenerateTestCode } from '../hooks/useTestGeneration';
 import { useExecuteTests, useExecuteWithCoverage } from '../hooks/useExecutions';
@@ -9,7 +19,6 @@ import TestCardViewer from '../components/test-card/TestCardViewer';
 import GenerationControls from '../components/code-generation/GenerationControls';
 import CodeEditor from '../components/code-generation/CodeEditor';
 import ChunksUsedPanel from '../components/code-generation/ChunksUsedPanel';
-import ExecutionPanel from '../components/execution/ExecutionPanel';
 import ResultsSummary from '../components/execution/ResultsSummary';
 import LogsViewer from '../components/execution/LogsViewer';
 import EvaluationPanel from '../components/evaluation/EvaluationPanel';
@@ -22,40 +31,39 @@ import type { GenerateTestCodeOptions, ExecuteTestsResponse, CoverageData, Busin
 const STEPS = [
   { title: 'User Story' },
   { title: 'Test Card' },
-  { title: 'Code Generation' },
-  { title: 'Execution' },
+  { title: 'Code & Execution' },
 ];
 
 export default function GenerationPage() {
   const selectedProjectPath = useAppStore((s) => s.selectedProjectPath);
   const [currentStep, setCurrentStep] = useState(0);
+  const [activeTab, setActiveTab] = useState('setup');
 
   // Step 1 → 2 data
   const [executionId, setExecutionId] = useState<number | null>(null);
   const [testCard, setTestCard] = useState<TestCard | null>(null);
   const [validation, setValidation] = useState<TestCardValidation | null>(null);
 
-  // Step 2 → 3 data
+  // Step 3 data (merged code + execution)
   const [testCode, setTestCode] = useState('');
   const [chunksUsed, setChunksUsed] = useState(0);
   const [scenariosCount, setScenariosCount] = useState(0);
   const [businessRuleValidation, setBusinessRuleValidation] = useState<BusinessRuleValidation | null>(null);
   const [genOptions, setGenOptions] = useState<GenerateTestCodeOptions>({
-    approach: 'multi-query',
+    approach: 'multi',
     enable_phase2: false,
     auto_execute: false,
   });
-
-  // Step 3 → 4 data
   const [execResults, setExecResults] = useState<ExecuteTestsResponse | null>(null);
   const [coverageData, setCoverageData] = useState<CoverageData | null>(null);
-  // Detected language for code editor
-  const [language, setLanguage] = useState('python');
+  const [language] = useState('python');
 
   const processStoryMutation = useProcessUserStory();
   const generateCodeMutation = useGenerateTestCode();
   const executeTestsMutation = useExecuteTests();
   const executeWithCoverageMutation = useExecuteWithCoverage();
+
+  const isExecuting = executeTestsMutation.isPending || executeWithCoverageMutation.isPending;
 
   if (!selectedProjectPath) {
     return (
@@ -83,7 +91,7 @@ export default function GenerationPage() {
     );
   };
 
-  // Step 2 → 3: Generate code
+  // Step 3: Generate code
   const handleGenerateCode = () => {
     if (executionId == null) return;
     generateCodeMutation.mutate(
@@ -95,37 +103,34 @@ export default function GenerationPage() {
           setScenariosCount(data.scenarios?.length ?? 0);
           setBusinessRuleValidation(data.business_rule_validation ?? null);
 
-          // If auto-execute returned results, jump to step 4
           if (data.execution_results) {
             setExecResults(data.execution_results);
-            setCurrentStep(3);
-          } else {
-            setCurrentStep(2);
+            setActiveTab('output');
           }
         },
       }
     );
   };
 
-  // Step 3 → 4: Execute tests
+  // Step 3: Execute tests
   const handleExecuteTests = () => {
     if (executionId == null) return;
     executeTestsMutation.mutate(executionId, {
       onSuccess: (data) => {
         setExecResults(data);
-        setCurrentStep(3);
+        setActiveTab('output');
       },
     });
   };
 
-  // Step 3 → 4: Execute with coverage
+  // Step 3: Execute with coverage
   const handleExecuteWithCoverage = () => {
     if (executionId == null) return;
     executeWithCoverageMutation.mutate(executionId, {
       onSuccess: (data) => {
         setExecResults(data);
         if (data.coverage) setCoverageData(data.coverage);
-        setCurrentStep(3);
+        setActiveTab('output');
       },
     });
   };
@@ -133,6 +138,7 @@ export default function GenerationPage() {
   // Reset pipeline
   const handleReset = () => {
     setCurrentStep(0);
+    setActiveTab('setup');
     setExecutionId(null);
     setTestCard(null);
     setValidation(null);
@@ -146,6 +152,117 @@ export default function GenerationPage() {
     generateCodeMutation.reset();
     executeTestsMutation.reset();
     executeWithCoverageMutation.reset();
+  };
+
+  // Build right-pane tabs for step 3
+  const buildRightPaneTabs = () => {
+    const items = [
+      {
+        key: 'setup',
+        label: <span><CodeOutlined /> Setup</span>,
+        children: (
+          <div>
+            <GenerationControls
+              options={genOptions}
+              onChange={setGenOptions}
+              onGenerate={handleGenerateCode}
+              isGenerating={generateCodeMutation.isPending}
+            />
+            {generateCodeMutation.isError && (
+              <Alert
+                type="error"
+                message="Code generation failed"
+                description={generateCodeMutation.error?.message}
+                showIcon
+                style={{ marginTop: 12 }}
+                action={
+                  <Button size="small" icon={<ReloadOutlined />} onClick={handleGenerateCode}>
+                    Retry
+                  </Button>
+                }
+              />
+            )}
+            {testCode && (
+              <div style={{ marginTop: 16 }}>
+                <Space>
+                  <Button
+                    type="primary"
+                    icon={<PlayCircleOutlined />}
+                    onClick={handleExecuteTests}
+                    loading={isExecuting}
+                    size="large"
+                  >
+                    Run Tests
+                  </Button>
+                  <Button
+                    icon={<BarChartOutlined />}
+                    onClick={handleExecuteWithCoverage}
+                    loading={isExecuting}
+                    size="large"
+                  >
+                    Run with Coverage
+                  </Button>
+                </Space>
+                {isExecuting && (
+                  <div style={{ marginTop: 16, textAlign: 'center' }}>
+                    <Spin />
+                    <Typography.Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
+                      Executing tests...
+                    </Typography.Text>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ),
+      },
+    ];
+
+    if (execResults) {
+      items.push({
+        key: 'output',
+        label: <span><FileTextOutlined /> Output</span>,
+        children: <ResultsSummary results={execResults} />,
+      });
+    }
+
+    if (coverageData) {
+      items.push({
+        key: 'coverage',
+        label: <span><FundOutlined /> Coverage</span>,
+        children: (
+          <div>
+            <CoverageOverview coverage={coverageData} />
+            <CoverageChart coverage={coverageData} />
+          </div>
+        ),
+      });
+    }
+
+    if (execResults) {
+      items.push({
+        key: 'logs',
+        label: <span><BugOutlined /> Logs</span>,
+        children: <LogsViewer stdout={execResults.stdout} stderr={execResults.stderr} />,
+      });
+    }
+
+    if (executionId && execResults) {
+      items.push({
+        key: 'evaluation',
+        label: <span><SafetyCertificateOutlined /> Evaluation</span>,
+        children: (
+          <div>
+            <EvaluationPanel executionId={executionId} />
+            <div style={{ marginTop: 16 }}>
+              <FeedbackPanel executionId={executionId} />
+            </div>
+          </div>
+        ),
+      });
+    }
+
+    return items;
   };
 
   return (
@@ -187,73 +304,80 @@ export default function GenerationPage() {
               <Button icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(0)}>
                 Back
               </Button>
-              <Button type="primary" icon={<ArrowRightOutlined />} onClick={() => setCurrentStep(2)}>
-                Next: Generate Code
+              <Button type="primary" onClick={() => { setCurrentStep(2); setActiveTab('setup'); }}>
+                Next: Code & Execution
               </Button>
             </Space>
           </div>
         </div>
       )}
 
-      {/* Step 3: Code Generation */}
+      {/* Step 3: Code & Execution (split-pane) */}
       {currentStep === 2 && (
         <div>
-          <GenerationControls
-            options={genOptions}
-            onChange={setGenOptions}
-            onGenerate={handleGenerateCode}
-            isGenerating={generateCodeMutation.isPending}
-          />
+          <Row gutter={16}>
+            {/* Left pane: Code Editor */}
+            <Col span={14}>
+              {testCode ? (
+                <>
+                  <CodeEditor code={testCode} language={language} onChange={setTestCode} />
+                  <ChunksUsedPanel
+                    chunksUsed={chunksUsed}
+                    scenariosCount={scenariosCount}
+                    businessRuleValidation={businessRuleValidation}
+                  />
+                </>
+              ) : (
+                <div
+                  style={{
+                    height: 'calc(100vh - 280px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px dashed var(--border-color)',
+                    borderRadius: 12,
+                    background: 'var(--bg-elevated)',
+                  }}
+                >
+                  <Typography.Text type="secondary">
+                    Generate code using the Setup panel →
+                  </Typography.Text>
+                </div>
+              )}
+            </Col>
 
-          {generateCodeMutation.isError && (
-            <Alert
-              type="error"
-              message="Code generation failed"
-              description={generateCodeMutation.error?.message}
-              showIcon
-              style={{ marginBottom: 16 }}
-              action={
-                <Button size="small" icon={<ReloadOutlined />} onClick={handleGenerateCode}>
-                  Retry
-                </Button>
-              }
-            />
-          )}
-
-          {testCode && (
-            <>
-              <CodeEditor code={testCode} language={language} onChange={setTestCode} />
-              <ChunksUsedPanel
-                chunksUsed={chunksUsed}
-                scenariosCount={scenariosCount}
-                businessRuleValidation={businessRuleValidation}
-              />
-              <div style={{ marginTop: 16, textAlign: 'right' }}>
-                <Space>
-                  <Button icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(1)}>
-                    Back
-                  </Button>
-                  <Button type="primary" icon={<ArrowRightOutlined />} onClick={() => setCurrentStep(3)}>
-                    Next: Execute
-                  </Button>
-                </Space>
+            {/* Right pane: Tabs (Setup / Output / Coverage / Logs / Evaluation) */}
+            <Col span={10}>
+              <div
+                style={{
+                  height: 'calc(100vh - 280px)',
+                  overflow: 'auto',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: 12,
+                  padding: '0 16px',
+                  background: 'var(--bg-surface)',
+                }}
+              >
+                <Tabs
+                  activeKey={activeTab}
+                  onChange={setActiveTab}
+                  size="small"
+                  items={buildRightPaneTabs()}
+                  style={{ height: '100%' }}
+                />
               </div>
-            </>
-          )}
-        </div>
-      )}
+            </Col>
+          </Row>
 
-      {/* Step 4: Execution */}
-      {currentStep === 3 && (
-        <div>
-          {!execResults && (
-            <ExecutionPanel
-              onExecute={handleExecuteTests}
-              onExecuteWithCoverage={handleExecuteWithCoverage}
-              isExecuting={executeTestsMutation.isPending || executeWithCoverageMutation.isPending}
-              hasCode={!!testCode}
-            />
-          )}
+          {/* Bottom navigation */}
+          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
+            <Button icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(1)}>
+              Back to Test Card
+            </Button>
+            <Button type="primary" onClick={handleReset}>
+              New Test Generation
+            </Button>
+          </div>
 
           {executeTestsMutation.isError && (
             <Alert
@@ -261,7 +385,7 @@ export default function GenerationPage() {
               message="Test execution failed"
               description={executeTestsMutation.error?.message}
               showIcon
-              style={{ marginBottom: 16 }}
+              style={{ marginTop: 12 }}
               action={
                 <Button size="small" icon={<ReloadOutlined />} onClick={handleExecuteTests}>
                   Retry
@@ -269,32 +393,6 @@ export default function GenerationPage() {
               }
             />
           )}
-
-          {execResults && (
-            <>
-              <ResultsSummary results={execResults} />
-              {coverageData && (
-                <>
-                  <CoverageOverview coverage={coverageData} />
-                  <CoverageChart coverage={coverageData} />
-                </>
-              )}
-              <LogsViewer stdout={execResults.stdout} stderr={execResults.stderr} />
-              {executionId && <EvaluationPanel executionId={executionId} />}
-              {executionId && <FeedbackPanel executionId={executionId} />}
-            </>
-          )}
-
-          <div style={{ marginTop: 24, textAlign: 'right' }}>
-            <Space>
-              <Button icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(2)}>
-                Back to Code
-              </Button>
-              <Button type="primary" onClick={handleReset}>
-                New Test Generation
-              </Button>
-            </Space>
-          </div>
         </div>
       )}
     </div>

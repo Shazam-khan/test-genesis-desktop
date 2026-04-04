@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Layout, Badge, Typography, Space, theme } from 'antd';
+import { Layout, Typography, Space, Tag, theme } from 'antd';
 import { ApiOutlined } from '@ant-design/icons';
 import { checkBackendHealth } from '../../services/api';
 import { useAppStore } from '../../store/appStore';
@@ -27,32 +27,44 @@ export default function Header() {
   return (
     <AntHeader
       style={{
-        background: token.colorBgContainer,
+        background: 'var(--glass-bg)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         padding: '0 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: `1px solid ${token.colorBorderSecondary}`,
-        height: 48,
-        lineHeight: '48px',
+        borderBottom: '1px solid var(--glass-border)',
+        height: 52,
+        lineHeight: '52px',
+        zIndex: 10,
       }}
     >
-      <Space>
-        <Text strong style={{ fontSize: 16 }}>Test Genesis</Text>
+      <Space size="middle" align="center">
+        <Text strong style={{ fontSize: 16, letterSpacing: '-0.3px' }} className="gradient-text">
+          Test Genesis
+        </Text>
         {projectName && (
-          <Text type="secondary" style={{ marginLeft: 16 }}>
-            / {projectName}
-          </Text>
+          <Tag
+            style={{
+              background: 'rgba(99, 102, 241, 0.08)',
+              borderColor: 'rgba(99, 102, 241, 0.2)',
+              color: token.colorPrimary,
+              fontWeight: 500,
+            }}
+          >
+            {projectName}
+          </Tag>
         )}
       </Space>
 
-      <Space size="middle">
+      <Space size="middle" align="center">
         <ThemeToggle />
-        <Space>
-          <Badge status={backendOnline ? 'success' : 'error'} />
-          <ApiOutlined />
+        <Space size={8} align="center">
+          <span className={`status-dot ${backendOnline ? 'online' : 'offline'}`} />
+          <ApiOutlined style={{ fontSize: 14, color: token.colorTextSecondary }} />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {backendOnline ? 'Backend Connected' : 'Backend Offline'}
+            {backendOnline ? 'Connected' : 'Offline'}
           </Text>
         </Space>
       </Space>

@@ -9,9 +9,6 @@ interface Props {
 }
 
 export default function ChunksUsedPanel({ chunksUsed, scenariosCount, businessRuleValidation }: Props) {
-  const rulesChecked = businessRuleValidation?.rules_checked ?? 0;
-  const rulesPassed = businessRuleValidation?.rules_passed ?? 0;
-
   return (
     <Card size="small" title="RAG Context" style={{ marginTop: 16 }}>
       <Row gutter={24}>
@@ -27,25 +24,27 @@ export default function ChunksUsedPanel({ chunksUsed, scenariosCount, businessRu
             <Statistic title="Scenarios Generated" value={scenariosCount} />
           </Col>
         )}
-        {businessRuleValidation && rulesChecked > 0 && (
+        {businessRuleValidation && (
           <Col>
             <Statistic
-              title="Business Rules"
-              value={`${rulesPassed}/${rulesChecked}`}
+              title={`Rule: ${businessRuleValidation.rule_id}`}
+              value={`${Math.round(businessRuleValidation.coverage_score * 100)}%`}
               prefix={
-                rulesPassed === rulesChecked ? (
-                  <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                businessRuleValidation.is_tested ? (
+                  <CheckCircleOutlined style={{ color: '#10b981' }} />
                 ) : (
-                  <CloseCircleOutlined style={{ color: '#faad14' }} />
+                  <CloseCircleOutlined style={{ color: '#f59e0b' }} />
                 )
               }
             />
           </Col>
         )}
       </Row>
-      {businessRuleValidation && rulesChecked === 0 && (
+      {businessRuleValidation && businessRuleValidation.missing_assertions.length > 0 && (
         <div style={{ marginTop: 12 }}>
-          <Tag color="blue">Business Rule Validation Available</Tag>
+          <Tag color="orange">
+            {businessRuleValidation.missing_assertions.length} missing assertion(s)
+          </Tag>
         </div>
       )}
     </Card>

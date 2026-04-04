@@ -27,11 +27,25 @@ export default function DomainCoverageChart({ domainCoverage }: Props) {
     <Card size="small" title="SCM Domain Coverage">
       <ResponsiveContainer width="100%" height={280}>
         <BarChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <defs>
+            <linearGradient id="gradDomain" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6366f1" />
+              <stop offset="100%" stopColor="#8b5cf6" />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
           <XAxis dataKey="label" tick={{ fontSize: 11 }} />
           <YAxis />
-          <Tooltip />
-          <Bar dataKey="count" fill="#1890ff" radius={[4, 4, 0, 0]} name="Tests" />
+          <Tooltip
+            contentStyle={{ borderRadius: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: 'none' }}
+          />
+          <Bar
+            dataKey="count"
+            fill="url(#gradDomain)"
+            radius={[6, 6, 0, 0]}
+            name="Tests"
+            animationDuration={800}
+          />
         </BarChart>
       </ResponsiveContainer>
     </Card>

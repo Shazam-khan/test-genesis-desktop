@@ -20,11 +20,11 @@ export default function GenerationControls({ options, onChange, onGenerate, isGe
             RAG Approach
           </Typography.Text>
           <Radio.Group
-            value={options.approach || 'multi-query'}
+            value={options.approach || 'multi'}
             onChange={(e) => onChange({ ...options, approach: e.target.value })}
           >
-            <Radio.Button value="single-query">Single Query</Radio.Button>
-            <Radio.Button value="multi-query">Multi Query</Radio.Button>
+            <Radio.Button value="single">Single Query</Radio.Button>
+            <Radio.Button value="multi">Multi Query</Radio.Button>
           </Radio.Group>
         </div>
 

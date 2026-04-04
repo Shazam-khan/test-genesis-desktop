@@ -12,7 +12,7 @@ export default function ImprovementSuggestions({ suggestions }: Props) {
     <Card
       title={
         <span>
-          <BulbOutlined style={{ color: '#1890ff', marginRight: 8 }} />
+          <BulbOutlined style={{ color: '#6366f1', marginRight: 8 }} />
           Improvement Suggestions
         </span>
       }

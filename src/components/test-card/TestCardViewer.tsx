@@ -60,7 +60,7 @@ export default function TestCardViewer({ testCard, validation }: Props) {
         size="small"
         title={
           <Space>
-            <CheckCircleOutlined style={{ color: '#52c41a' }} />
+            <CheckCircleOutlined style={{ color: '#10b981' }} />
             Positive Flow
           </Space>
         }
@@ -74,7 +74,7 @@ export default function TestCardViewer({ testCard, validation }: Props) {
           renderItem={(item) => (
             <List.Item>
               <Typography.Text>
-                <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
+                <CheckCircleOutlined style={{ color: '#10b981', marginRight: 8 }} />
                 {item}
               </Typography.Text>
             </List.Item>
@@ -87,7 +87,7 @@ export default function TestCardViewer({ testCard, validation }: Props) {
         size="small"
         title={
           <Space>
-            <WarningOutlined style={{ color: '#faad14' }} />
+            <WarningOutlined style={{ color: '#f59e0b' }} />
             Alternate Flow (Negative Cases)
           </Space>
         }

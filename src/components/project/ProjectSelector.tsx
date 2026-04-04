@@ -56,11 +56,16 @@ export default function ProjectSelector({ onSelectNew }: Props) {
               <Card
                 hoverable
                 size="small"
+                className="card-hover-lift"
                 onClick={() => handleSelectExisting(project)}
                 style={{
                   borderColor:
-                    selectedProjectPath === project.project_path ? '#1890ff' : undefined,
+                    selectedProjectPath === project.project_path ? '#6366f1' : undefined,
                   borderWidth: selectedProjectPath === project.project_path ? 2 : 1,
+                  boxShadow:
+                    selectedProjectPath === project.project_path
+                      ? '0 0 0 3px rgba(99, 102, 241, 0.15), var(--surface-shadow)'
+                      : undefined,
                 }}
               >
                 <Typography.Text strong ellipsis style={{ display: 'block', marginBottom: 8 }}>
@@ -70,8 +75,8 @@ export default function ProjectSelector({ onSelectNew }: Props) {
                   {project.project_path}
                 </Typography.Text>
                 <Space wrap>
-                  <Tag color="blue">{project.framework}</Tag>
-                  <Tag color="green">{project.language}</Tag>
+                  <Tag color="purple">{project.framework}</Tag>
+                  <Tag color="cyan">{project.language}</Tag>
                   <Tag>{project.indexed_files} files</Tag>
                   <Tag>{project.indexed_chunks} chunks</Tag>
                 </Space>

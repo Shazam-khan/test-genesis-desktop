@@ -6,7 +6,7 @@ interface Props {
   coverage: CoverageData;
 }
 
-const COLORS = ['#1890ff', '#722ed1', '#13c2c2'];
+const COLORS = ['#6366f1', '#8b5cf6', '#06b6d4'];
 
 export default function CoverageChart({ coverage }: Props) {
   const data = [
@@ -19,11 +19,14 @@ export default function CoverageChart({ coverage }: Props) {
     <Card size="small" title="Coverage Comparison" style={{ marginTop: 16 }}>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
           <XAxis dataKey="name" />
           <YAxis domain={[0, 100]} unit="%" />
-          <Tooltip formatter={(value: number) => `${value}%`} />
-          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+          <Tooltip
+            formatter={(value: number) => `${value}%`}
+            contentStyle={{ borderRadius: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: 'none' }}
+          />
+          <Bar dataKey="value" radius={[6, 6, 0, 0]} animationDuration={800}>
             {data.map((_, index) => (
               <Cell key={index} fill={COLORS[index % COLORS.length]} />
             ))}

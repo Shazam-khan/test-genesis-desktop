@@ -37,8 +37,51 @@ export default function App() {
         theme={{
           algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
           token: {
-            colorPrimary: '#1890ff',
-            borderRadius: 6,
+            colorPrimary: '#6366f1',
+            colorSuccess: '#10b981',
+            colorWarning: '#f59e0b',
+            colorError: '#ef4444',
+            colorInfo: '#6366f1',
+            borderRadius: 8,
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            colorBgContainer: isDark ? '#18181b' : '#ffffff',
+            colorBgLayout: isDark ? '#0f0f13' : '#f5f5f7',
+            colorBorderSecondary: isDark ? '#2e2e35' : '#e5e7eb',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            boxShadowSecondary: '0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)',
+          },
+          components: {
+            Card: {
+              borderRadiusLG: 12,
+              paddingLG: 20,
+            },
+            Button: {
+              fontWeight: 500,
+              borderRadius: 8,
+              controlHeight: 36,
+              controlHeightLG: 44,
+            },
+            Menu: {
+              itemBorderRadius: 8,
+              itemMarginInline: 8,
+            },
+            Table: {
+              borderRadius: 12,
+              headerBorderRadius: 12,
+            },
+            Tag: {
+              borderRadiusSM: 99,
+            },
+            Steps: {
+              colorPrimary: '#6366f1',
+            },
+            Input: {
+              borderRadius: 8,
+              controlHeight: 36,
+            },
+            Select: {
+              borderRadius: 8,
+            },
           },
         }}
       >

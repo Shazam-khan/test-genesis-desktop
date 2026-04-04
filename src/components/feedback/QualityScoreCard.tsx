@@ -8,7 +8,7 @@ interface Props {
 
 export default function QualityScoreCard({ feedback }: Props) {
   const { quality_score, metrics } = feedback;
-  const color = quality_score >= 80 ? '#52c41a' : quality_score >= 50 ? '#faad14' : '#f5222d';
+  const color = quality_score >= 80 ? '#10b981' : quality_score >= 50 ? '#f59e0b' : '#ef4444';
   const label = quality_score >= 80 ? 'Good' : quality_score >= 50 ? 'Fair' : 'Needs Improvement';
 
   return (

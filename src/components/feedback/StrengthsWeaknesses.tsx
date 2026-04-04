@@ -18,29 +18,34 @@ export default function StrengthsWeaknesses({ strengths, weaknesses }: Props) {
   return (
     <Card title="Strengths & Weaknesses" size="small">
       {strengths.length > 0 && (
-        <>
-          <Typography.Text strong style={{ color: '#52c41a' }}>
-            <CheckCircleOutlined /> Strengths
+        <div className="feedback-strengths" style={{ padding: '12px 16px', marginBottom: 12 }}>
+          <Typography.Text strong style={{ color: '#10b981', display: 'block', marginBottom: 8 }}>
+            <CheckCircleOutlined style={{ marginRight: 6 }} />
+            Strengths ({strengths.length})
           </Typography.Text>
           <List
             size="small"
             dataSource={strengths}
-            renderItem={(item) => <List.Item style={{ padding: '4px 0' }}>{item}</List.Item>}
-            style={{ marginBottom: 12 }}
+            renderItem={(item) => (
+              <List.Item style={{ padding: '6px 0', borderBottom: 'none' }}>{item}</List.Item>
+            )}
           />
-        </>
+        </div>
       )}
       {weaknesses.length > 0 && (
-        <>
-          <Typography.Text strong style={{ color: '#faad14' }}>
-            <WarningOutlined /> Weaknesses
+        <div className="feedback-weaknesses" style={{ padding: '12px 16px' }}>
+          <Typography.Text strong style={{ color: '#f59e0b', display: 'block', marginBottom: 8 }}>
+            <WarningOutlined style={{ marginRight: 6 }} />
+            Weaknesses ({weaknesses.length})
           </Typography.Text>
           <List
             size="small"
             dataSource={weaknesses}
-            renderItem={(item) => <List.Item style={{ padding: '4px 0' }}>{item}</List.Item>}
+            renderItem={(item) => (
+              <List.Item style={{ padding: '6px 0', borderBottom: 'none' }}>{item}</List.Item>
+            )}
           />
-        </>
+        </div>
       )}
     </Card>
   );
