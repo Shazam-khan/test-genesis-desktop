@@ -14,6 +14,10 @@ export default function ProjectSelector({ onSelectNew }: Props) {
   const { selectedProjectPath, setProject } = useAppStore();
 
   const handleBrowse = async () => {
+    if (!window.electron) {
+      alert('Directory picker is only available in the desktop app (Electron). Please run via "npm run dev" and use the Electron window, not a browser.');
+      return;
+    }
     const path = await window.electron.selectDirectory();
     if (path) {
       onSelectNew(path);

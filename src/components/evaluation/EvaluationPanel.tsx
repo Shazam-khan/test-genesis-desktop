@@ -71,22 +71,31 @@ export default function EvaluationPanel({ executionId }: Props) {
                 score={cardResult.trustworthiness_score}
                 explanation={cardResult.explanation}
                 method={cardResult.evaluation_method}
+                title="Test Card Quality"
+                description="How accurately and completely the AI-generated test card captures the requirements from the user story (scenarios, preconditions, expected results)."
+                icon="card"
               />
             )}
           </Col>
           <Col xs={24} md={12}>
             {codeResult && 'validation_results' in codeResult && (
-              <>
-                <TrustworthinessGauge
-                  score={codeResult.trustworthiness_score}
-                  explanation={null}
-                  method={codeResult.evaluation_method}
-                />
-                <CodeValidationCard validation={codeResult.validation_results} />
-              </>
+              <TrustworthinessGauge
+                score={codeResult.trustworthiness_score}
+                explanation={null}
+                method={codeResult.evaluation_method}
+                title="Test Code Quality"
+                description="How well the generated test code implements and validates what is described in the test card. A low score means the code may not fully cover the test scenarios."
+                icon="code"
+              />
             )}
           </Col>
         </Row>
+      )}
+
+      {hasResults && !isLoading && codeResult && 'validation_results' in codeResult && (
+        <div style={{ marginTop: 16 }}>
+          <CodeValidationCard validation={codeResult.validation_results} />
+        </div>
       )}
     </Card>
   );
