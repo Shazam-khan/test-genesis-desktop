@@ -18,10 +18,10 @@ export default function QualityReportView({ report }: Props) {
             <Statistic title="Total Tests" value={summary.total_tests} />
           </Col>
           <Col span={6}>
-            <Statistic title="Pass Rate" value={`${((summary.pass_rate ?? 0) * 100).toFixed(1)}%`} />
+            <Statistic title="Pass Rate" value={`${(summary.pass_rate ?? 0).toFixed(1)}%`} />
           </Col>
           <Col span={6}>
-            <Statistic title="Avg Coverage" value={`${((summary.average_coverage ?? 0) * 100).toFixed(1)}%`} />
+            <Statistic title="Avg Coverage" value={`${(summary.average_coverage ?? 0).toFixed(1)}%`} />
           </Col>
           <Col span={6}>
             <Statistic title="Avg Trustworthiness" value={`${((summary.average_trustworthiness ?? 0) * 100).toFixed(1)}%`} />
