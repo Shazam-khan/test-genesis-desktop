@@ -118,6 +118,7 @@ export default function GenerationPage() {
     executeTestsMutation.mutate(executionId, {
       onSuccess: (data) => {
         setExecResults(data);
+        if ((data as any).coverage) setCoverageData((data as any).coverage);
         setActiveTab('output');
       },
     });
