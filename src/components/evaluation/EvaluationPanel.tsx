@@ -32,7 +32,7 @@ export default function EvaluationPanel({ executionId }: Props) {
   return (
     <Card
       size="small"
-      title={<><SafetyCertificateOutlined /> TLM Evaluation</>}
+      title={<><SafetyCertificateOutlined /> Trustworthiness Evaluation</>}
       style={{ marginTop: 16 }}
     >
       {!hasResults && !isLoading && (
@@ -43,7 +43,7 @@ export default function EvaluationPanel({ executionId }: Props) {
             onClick={handleEvaluate}
             size="large"
           >
-            Evaluate with TLM
+            Evaluate Trustworthiness
           </Button>
         </Space>
       )}

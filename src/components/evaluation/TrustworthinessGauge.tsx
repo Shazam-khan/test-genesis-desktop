@@ -4,7 +4,7 @@ import { SafetyCertificateOutlined, FileTextOutlined, CodeOutlined, InfoCircleOu
 interface Props {
   score: number | null;
   explanation: string | null;
-  method: 'tlm' | 'fallback';
+  method: 'deepeval_geval' | 'fallback';
   title: string;
   description: string;
   icon?: 'card' | 'code';
@@ -53,8 +53,8 @@ export default function TrustworthinessGauge({ score, explanation, method, title
           {getScoreLabel(score)} Confidence
         </Tag>
       )}
-      <Tag color={method === 'tlm' ? 'purple' : 'orange'} style={{ fontWeight: 500 }}>
-        {method === 'tlm' ? 'CleanLab TLM' : 'Heuristic Fallback'}
+      <Tag color={method === 'deepeval_geval' ? 'purple' : 'orange'} style={{ fontWeight: 500 }}>
+        {method === 'deepeval_geval' ? 'DeepEval G-Eval' : 'Heuristic Fallback'}
       </Tag>
       {explanation && (
         <Typography.Paragraph

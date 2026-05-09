@@ -21,7 +21,7 @@ export interface TestCardEvaluation {
   explanation: string | null;
   confidence_metrics: ConfidenceMetrics;
   evaluation_type: 'test_card';
-  evaluation_method: 'tlm' | 'fallback';
+  evaluation_method: 'deepeval_geval' | 'fallback';
 }
 
 export interface TestCodeEvaluation {
@@ -29,7 +29,7 @@ export interface TestCodeEvaluation {
   explanation: string | null;
   validation_results: CodeValidationResults;
   evaluation_type: 'test_code';
-  evaluation_method: 'tlm' | 'fallback';
+  evaluation_method: 'deepeval_geval' | 'fallback';
 }
 
 export interface EvaluationResponse {
