@@ -34,6 +34,13 @@ const STEPS = [
   { title: 'Code & Execution' },
 ];
 
+function detectLanguageFromCode(code: string): string {
+  if (/\bjest\.(fn|mock)\b|^\s*describe\s*\(|^\s*test\s*\(|^\s*it\s*\(|\brequire\s*\(/m.test(code)) return 'javascript';
+  if (/^\s*import\s+pytest\b|^\s*def\s+test_|^\s*from\s+\S+\s+import\b/m.test(code)) return 'python';
+  if (/@Test\b|public\s+(?:static\s+)?void\s+test/.test(code)) return 'java';
+  return 'plaintext';
+}
+
 export default function GenerationPage() {
   const selectedProjectPath = useAppStore((s) => s.selectedProjectPath);
   const [currentStep, setCurrentStep] = useState(0);
@@ -56,7 +63,7 @@ export default function GenerationPage() {
   });
   const [execResults, setExecResults] = useState<ExecuteTestsResponse | null>(null);
   const [coverageData, setCoverageData] = useState<CoverageData | null>(null);
-  const [language] = useState('python');
+  const [language, setLanguage] = useState('python');
 
   const processStoryMutation = useProcessUserStory();
   const generateCodeMutation = useGenerateTestCode();
@@ -99,6 +106,7 @@ export default function GenerationPage() {
       {
         onSuccess: (data) => {
           setTestCode(data.test_code);
+          setLanguage(detectLanguageFromCode(data.test_code));
           setChunksUsed(data.chunks_used);
           setScenariosCount(data.scenarios?.length ?? 0);
           setBusinessRuleValidation(data.business_rule_validation ?? null);
